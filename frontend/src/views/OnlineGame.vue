@@ -12,7 +12,7 @@
               :game-over="onlineStore.gameOver"
               :moves="onlineStore.moves"
               :show-order="showOrder"
-              :disabled="onlineStore.gameOver || onlineStore.currentPlayer !== onlineStore.playerColor"
+              :disabled="onlineStore.gameOver || !isMyTurn(onlineStore.currentPlayer, onlineStore.playerColor)"
               @move="handleMove"
             />
           </div>
@@ -27,14 +27,14 @@
             </header>
 
             <div class="grid grid-cols-2 gap-4 text-center">
-              <div class="p-3 border border-zen-border" :class="isMyTurn ? '' : 'opacity-50'">
+              <div class="p-3 border border-zen-border" :class="isMyTurnComputed ? '' : 'opacity-50'">
                 <div class="flex items-center justify-center space-x-2 mb-1">
                   <span class="w-3 h-3 rounded-full" :class="onlineStore.playerColor === 'BLACK' ? 'bg-zen-text' : 'bg-white border border-zen-border'"></span>
                   <span class="text-xs text-zen-muted">我</span>
                 </div>
                 <div class="text-sm font-light truncate">{{ myNickname }}</div>
               </div>
-              <div class="p-3 border border-zen-border" :class="!isMyTurn ? '' : 'opacity-50'">
+              <div class="p-3 border border-zen-border" :class="!isMyTurnComputed ? '' : 'opacity-50'">
                 <div class="flex items-center justify-center space-x-2 mb-1">
                   <span class="w-3 h-3 rounded-full" :class="onlineStore.playerColor === 'BLACK' ? 'bg-white border border-zen-border' : 'bg-zen-text'"></span>
                   <span class="text-xs text-zen-muted">对手</span>
@@ -44,7 +44,7 @@
             </div>
 
             <div class="text-center">
-              <span v-if="isMyTurn && !onlineStore.gameOver" class="text-sm text-zen-text animate-pulse tracking-widest">
+              <span v-if="isMyTurnComputed && !onlineStore.gameOver" class="text-sm text-zen-text animate-pulse tracking-widest">
                 你的回合
               </span>
               <span v-else-if="!onlineStore.gameOver" class="text-sm text-zen-muted tracking-widest">
@@ -192,6 +192,7 @@ import { useRouter } from 'vue-router'
 import { useOnlineGameStore } from '../stores/onlineGame'
 import { useAuthStore } from '../stores/auth'
 import { wsService } from '../services/websocket'
+import { isMyTurn } from '../utils/boardRules'
 import GameBoard from '../components/GameBoard.vue'
 import ConfirmDialog from '../components/ConfirmDialog.vue'
 import Toast from '../components/Toast.vue'
@@ -208,8 +209,8 @@ const showToast = ref(false)
 
 const myNickname = computed(() => authStore.user?.nickname || '我')
 
-const isMyTurn = computed(() => {
-  return onlineStore.currentPlayer === onlineStore.playerColor
+const isMyTurnComputed = computed(() => {
+  return isMyTurn(onlineStore.currentPlayer, onlineStore.playerColor)
 })
 
 const getResultTitle = computed(() => {
@@ -292,7 +293,7 @@ function setupListeners() {
 }
 
 function handleMove(x, y) {
-  if (isMyTurn.value && !onlineStore.gameOver) {
+  if (isMyTurnComputed.value && !onlineStore.gameOver) {
     wsService.makeMove(x, y)
   }
 }

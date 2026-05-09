@@ -8,26 +8,26 @@
         <div class="absolute inset-0 pointer-events-none">
           <!-- 横线 -->
           <div
-            v-for="i in 15"
+            v-for="i in BOARD_SIZE"
             :key="'h' + i"
             class="absolute bg-amber-700"
             :style="{
               left: halfCell + 'px',
               top: ((i - 1) * cellSize + halfCell) + 'px',
-              width: (cellSize * 14) + 'px',
+              width: (cellSize * (BOARD_SIZE - 1)) + 'px',
               height: '1px'
             }"
           ></div>
           <!-- 竖线 -->
           <div
-            v-for="i in 15"
+            v-for="i in BOARD_SIZE"
             :key="'v' + i"
             class="absolute bg-amber-700"
             :style="{
               left: ((i - 1) * cellSize + halfCell) + 'px',
               top: halfCell + 'px',
               width: '1px',
-              height: (cellSize * 14) + 'px'
+              height: (cellSize * (BOARD_SIZE - 1)) + 'px'
             }"
           ></div>
           <!-- 星位点 -->
@@ -72,9 +72,9 @@
                 v-if="cell !== 0"
                 class="rounded-full flex items-center justify-center shadow-md relative z-10"
                 :style="{ width: pieceSize + 'px', height: pieceSize + 'px' }"
-                :class="cell === 1 ? 'bg-gray-900' : 'bg-gray-100 border-2 border-gray-400'"
+                :class="cell === BLACK ? 'bg-gray-900' : 'bg-gray-100 border-2 border-gray-400'"
               >
-                <span v-if="showOrder" class="text-[8px] tracking-tighter font-bold" :class="cell === 1 ? 'text-white' : 'text-gray-800'">
+                <span v-if="showOrder" class="text-[8px] tracking-tighter font-bold" :class="cell === BLACK ? 'text-white' : 'text-gray-800'">
                   {{ getMoveOrder(x, y) }}
                 </span>
               </div>
@@ -94,6 +94,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import { BOARD_SIZE, BLACK, canPlace as canPlaceRule } from '../utils/boardRules'
 
 const props = defineProps({
   board: { type: Array, required: true },
@@ -110,7 +111,7 @@ const emit = defineEmits(['move'])
 const cellSize = 32
 const pieceSize = 26
 const halfCell = cellSize / 2
-const boardWidth = cellSize * 15
+const boardWidth = cellSize * BOARD_SIZE
 
 const boardStyle = computed(() => ({
   width: `${boardWidth}px`,
@@ -124,7 +125,7 @@ const starPoints = [
 ]
 
 const canPlace = (x, y) => {
-  return !props.gameOver && !props.disabled && props.board[x][y] === 0
+  return canPlaceRule(props.board, x, y, props.gameOver, props.disabled)
 }
 
 const isLastMove = (x, y) => {

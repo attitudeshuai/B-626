@@ -12,7 +12,7 @@
               :game-over="gameStore.gameOver"
               :moves="gameStore.moves"
               :show-order="showOrder"
-              :disabled="gameStore.isLoading || (gameStore.gameMode === 'AI' && gameStore.currentPlayer !== gameStore.playerColor)"
+              :disabled="gameStore.isLoading || (gameStore.gameMode === 'AI' && !isMyTurn(gameStore.currentPlayer, gameStore.playerColor))"
               @move="handleMove"
             />
           </div>
@@ -143,6 +143,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useGameStore } from '../stores/game'
+import { isMyTurn } from '../utils/boardRules'
 import GameBoard from '../components/GameBoard.vue'
 import ConfirmDialog from '../components/ConfirmDialog.vue'
 
