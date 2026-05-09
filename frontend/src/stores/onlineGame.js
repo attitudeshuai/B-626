@@ -1,9 +1,10 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import { createEmptyBoard } from '../utils/boardRules'
 
 export const useOnlineGameStore = defineStore('onlineGame', () => {
   const roomId = ref('')
-  const board = ref(Array(15).fill(null).map(() => Array(15).fill(0)))
+  const board = ref(createEmptyBoard())
   const currentPlayer = ref('BLACK')
   const playerColor = ref('BLACK')
   const gameOver = ref(false)
@@ -71,7 +72,7 @@ export const useOnlineGameStore = defineStore('onlineGame', () => {
 
   function reset() {
     roomId.value = ''
-    board.value = Array(15).fill(null).map(() => Array(15).fill(0))
+    board.value = createEmptyBoard()
     currentPlayer.value = 'BLACK'
     playerColor.value = 'BLACK'
     gameOver.value = false

@@ -124,6 +124,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { getHistory, getGameDetail } from '../api/game'
+import { createEmptyBoard, colorToValue } from '../utils/boardRules'
 import GameBoard from '../components/GameBoard.vue'
 
 const records = ref([])
@@ -142,9 +143,9 @@ const replayMoves = computed(() => {
 })
 
 const replayBoard = computed(() => {
-  const board = Array(15).fill(null).map(() => Array(15).fill(0))
+  const board = createEmptyBoard()
   replayMoves.value.forEach(move => {
-    board[move.x][move.y] = move.color === 'BLACK' ? 1 : 2
+    board[move.x][move.y] = colorToValue(move.color)
   })
   return board
 })

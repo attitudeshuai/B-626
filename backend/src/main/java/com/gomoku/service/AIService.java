@@ -6,22 +6,24 @@ import java.util.*;
 @Service
 public class AIService {
 
-    private static final int BOARD_SIZE = 15;
+    private final BoardRuleService boardRuleService;
 
-    // 棋型分数常量 - 大幅提升
-    private static final int FIVE = 10000000;           // 连五
-    private static final int OPEN_FOUR = 1000000;       // 活四
-    private static final int BLOCKED_FOUR = 100000;     // 冲四
-    private static final int OPEN_THREE = 50000;        // 活三
-    private static final int BLOCKED_THREE = 5000;      // 眠三
-    private static final int OPEN_TWO = 3000;           // 活二
-    private static final int BLOCKED_TWO = 500;         // 眠二
-    private static final int OPEN_ONE = 100;            // 活一
+    private static final int FIVE = 10000000;
+    private static final int OPEN_FOUR = 1000000;
+    private static final int BLOCKED_FOUR = 100000;
+    private static final int OPEN_THREE = 50000;
+    private static final int BLOCKED_THREE = 5000;
+    private static final int OPEN_TWO = 3000;
+    private static final int BLOCKED_TWO = 500;
+    private static final int OPEN_ONE = 100;
 
-    // 难度对应的搜索深度
     private static final int EASY_DEPTH = 1;
     private static final int MEDIUM_DEPTH = 3;
     private static final int HARD_DEPTH = 5;
+
+    public AIService(BoardRuleService boardRuleService) {
+        this.boardRuleService = boardRuleService;
+    }
 
     public int[] getAIMove(int[][] board, String difficulty, String aiColor) {
         int aiValue = "BLACK".equals(aiColor) ? 1 : 2;
@@ -115,7 +117,7 @@ public class AIService {
     private int[] minimaxSearch(int[][] board, int aiValue, int depth) {
         List<int[]> candidates = getCandidateMoves(board);
         if (candidates.isEmpty()) {
-            return new int[]{BOARD_SIZE / 2, BOARD_SIZE / 2};
+            return new int[]{BoardRuleService.BOARD_SIZE / 2, BoardRuleService.BOARD_SIZE / 2};
         }
 
         int bestScore = Integer.MIN_VALUE;
@@ -261,8 +263,8 @@ public class AIService {
 
     private List<int[]> findAllThreatMoves(int[][] board, int player) {
         List<int[]> threats = new ArrayList<>();
-        for (int i = 0; i < BOARD_SIZE; i++) {
-            for (int j = 0; j < BOARD_SIZE; j++) {
+        for (int i = 0; i < BoardRuleService.BOARD_SIZE; i++) {
+            for (int j = 0; j < BoardRuleService.BOARD_SIZE; j++) {
                 if (board[i][j] == 0 && hasNeighbor(board, i, j)) {
                     int score = evaluatePosition(board, i, j, player);
                     if (score >= BLOCKED_THREE) {
@@ -281,11 +283,11 @@ public class AIService {
         int defender = attacker == 1 ? 2 : 1;
 
         // 寻找攻击方的冲四点
-        for (int i = 0; i < BOARD_SIZE; i++) {
-            for (int j = 0; j < BOARD_SIZE; j++) {
+        for (int i = 0; i < BoardRuleService.BOARD_SIZE; i++) {
+            for (int j = 0; j < BoardRuleService.BOARD_SIZE; j++) {
                 if (board[i][j] == 0) {
                     board[i][j] = attacker;
-                    if (checkWin(board, i, j, attacker)) {
+                    if (boardRuleService.checkWin(board, i, j, attacker)) {
                         board[i][j] = 0;
                         points.add(new int[]{i, j});
                     } else {
@@ -300,24 +302,24 @@ public class AIService {
     // ==================== 候选点生成 ====================
     private List<int[]> getCandidateMoves(int[][] board) {
         List<int[]> candidates = new ArrayList<>();
-        boolean[][] visited = new boolean[BOARD_SIZE][BOARD_SIZE];
+        boolean[][] visited = new boolean[BoardRuleService.BOARD_SIZE][BoardRuleService.BOARD_SIZE];
 
         // 检查是否为空棋盘
         boolean isEmpty = true;
-        for (int i = 0; i < BOARD_SIZE && isEmpty; i++) {
-            for (int j = 0; j < BOARD_SIZE && isEmpty; j++) {
+        for (int i = 0; i < BoardRuleService.BOARD_SIZE && isEmpty; i++) {
+            for (int j = 0; j < BoardRuleService.BOARD_SIZE && isEmpty; j++) {
                 if (board[i][j] != 0) isEmpty = false;
             }
         }
 
         if (isEmpty) {
-            candidates.add(new int[]{BOARD_SIZE / 2, BOARD_SIZE / 2});
+            candidates.add(new int[]{BoardRuleService.BOARD_SIZE / 2, BoardRuleService.BOARD_SIZE / 2});
             return candidates;
         }
 
         // 找到所有有邻居的空位
-        for (int i = 0; i < BOARD_SIZE; i++) {
-            for (int j = 0; j < BOARD_SIZE; j++) {
+        for (int i = 0; i < BoardRuleService.BOARD_SIZE; i++) {
+            for (int j = 0; j < BoardRuleService.BOARD_SIZE; j++) {
                 if (board[i][j] == 0 && !visited[i][j] && hasNeighbor(board, i, j)) {
                     candidates.add(new int[]{i, j});
                     visited[i][j] = true;
@@ -332,11 +334,11 @@ public class AIService {
     private int evaluateTerminal(int[][] board, int aiValue) {
         int playerValue = aiValue == 1 ? 2 : 1;
 
-        for (int i = 0; i < BOARD_SIZE; i++) {
-            for (int j = 0; j < BOARD_SIZE; j++) {
+        for (int i = 0; i < BoardRuleService.BOARD_SIZE; i++) {
+            for (int j = 0; j < BoardRuleService.BOARD_SIZE; j++) {
                 if (board[i][j] != 0) {
-                    if (checkWin(board, i, j, aiValue)) return FIVE;
-                    if (checkWin(board, i, j, playerValue)) return -FIVE;
+                    if (boardRuleService.checkWin(board, i, j, aiValue)) return FIVE;
+                    if (boardRuleService.checkWin(board, i, j, playerValue)) return -FIVE;
                 }
             }
         }
@@ -348,8 +350,8 @@ public class AIService {
         int aiScore = 0;
         int playerScore = 0;
 
-        for (int i = 0; i < BOARD_SIZE; i++) {
-            for (int j = 0; j < BOARD_SIZE; j++) {
+        for (int i = 0; i < BoardRuleService.BOARD_SIZE; i++) {
+            for (int j = 0; j < BoardRuleService.BOARD_SIZE; j++) {
                 if (board[i][j] == 0 && hasNeighbor(board, i, j)) {
                     aiScore += evaluatePosition(board, i, j, aiValue);
                     playerScore += evaluatePosition(board, i, j, playerValue);
@@ -386,7 +388,7 @@ public class AIService {
         // 正方向
         int nx = x + dx, ny = y + dy;
         int forwardSpace = 0;
-        while (nx >= 0 && nx < BOARD_SIZE && ny >= 0 && ny < BOARD_SIZE) {
+        while (nx >= 0 && nx < BoardRuleService.BOARD_SIZE && ny >= 0 && ny < BoardRuleService.BOARD_SIZE) {
             if (board[nx][ny] == player) {
                 count++;
             } else if (board[nx][ny] == 0) {
@@ -394,7 +396,7 @@ public class AIService {
                 if (forwardSpace <= 1) {
                     // 检查跳连
                     int nnx = nx + dx, nny = ny + dy;
-                    if (nnx >= 0 && nnx < BOARD_SIZE && nny >= 0 && nny < BOARD_SIZE && board[nnx][nny] == player) {
+                    if (nnx >= 0 && nnx < BoardRuleService.BOARD_SIZE && nny >= 0 && nny < BoardRuleService.BOARD_SIZE && board[nnx][nny] == player) {
                         count++;
                         nx = nnx;
                         ny = nny;
@@ -410,20 +412,20 @@ public class AIService {
             nx += dx;
             ny += dy;
         }
-        if (nx < 0 || nx >= BOARD_SIZE || ny < 0 || ny >= BOARD_SIZE) blocked++;
+        if (nx < 0 || nx >= BoardRuleService.BOARD_SIZE || ny < 0 || ny >= BoardRuleService.BOARD_SIZE) blocked++;
 
         // 反方向
         nx = x - dx;
         ny = y - dy;
         int backwardSpace = 0;
-        while (nx >= 0 && nx < BOARD_SIZE && ny >= 0 && ny < BOARD_SIZE) {
+        while (nx >= 0 && nx < BoardRuleService.BOARD_SIZE && ny >= 0 && ny < BoardRuleService.BOARD_SIZE) {
             if (board[nx][ny] == player) {
                 count++;
             } else if (board[nx][ny] == 0) {
                 backwardSpace++;
                 if (backwardSpace <= 1) {
                     int nnx = nx - dx, nny = ny - dy;
-                    if (nnx >= 0 && nnx < BOARD_SIZE && nny >= 0 && nny < BOARD_SIZE && board[nnx][nny] == player) {
+                    if (nnx >= 0 && nnx < BoardRuleService.BOARD_SIZE && nny >= 0 && nny < BoardRuleService.BOARD_SIZE && board[nnx][nny] == player) {
                         count++;
                         nx = nnx;
                         ny = nny;
@@ -439,7 +441,7 @@ public class AIService {
             nx -= dx;
             ny -= dy;
         }
-        if (nx < 0 || nx >= BOARD_SIZE || ny < 0 || ny >= BOARD_SIZE) blocked++;
+        if (nx < 0 || nx >= BoardRuleService.BOARD_SIZE || ny < 0 || ny >= BoardRuleService.BOARD_SIZE) blocked++;
 
         return new int[]{count, openEnds, blocked};
     }
@@ -475,11 +477,11 @@ public class AIService {
 
     // ==================== 辅助方法 ====================
     private int[] findWinningMove(int[][] board, int player) {
-        for (int i = 0; i < BOARD_SIZE; i++) {
-            for (int j = 0; j < BOARD_SIZE; j++) {
+        for (int i = 0; i < BoardRuleService.BOARD_SIZE; i++) {
+            for (int j = 0; j < BoardRuleService.BOARD_SIZE; j++) {
                 if (board[i][j] == 0) {
                     board[i][j] = player;
-                    if (checkWin(board, i, j, player)) {
+                    if (boardRuleService.checkWin(board, i, j, player)) {
                         board[i][j] = 0;
                         return new int[]{i, j};
                     }
@@ -494,8 +496,8 @@ public class AIService {
         int bestScore = 0;
         int[] bestMove = null;
 
-        for (int i = 0; i < BOARD_SIZE; i++) {
-            for (int j = 0; j < BOARD_SIZE; j++) {
+        for (int i = 0; i < BoardRuleService.BOARD_SIZE; i++) {
+            for (int j = 0; j < BoardRuleService.BOARD_SIZE; j++) {
                 if (board[i][j] == 0 && hasNeighbor(board, i, j)) {
                     int score = evaluatePosition(board, i, j, player);
                     if (score >= BLOCKED_THREE && score > bestScore) {
@@ -511,8 +513,8 @@ public class AIService {
     private int[] findScoredMoveWithRandom(int[][] board, int aiValue, double randomFactor) {
         List<int[]> scoredMoves = new ArrayList<>();
 
-        for (int i = 0; i < BOARD_SIZE; i++) {
-            for (int j = 0; j < BOARD_SIZE; j++) {
+        for (int i = 0; i < BoardRuleService.BOARD_SIZE; i++) {
+            for (int j = 0; j < BoardRuleService.BOARD_SIZE; j++) {
                 if (board[i][j] == 0 && hasNeighbor(board, i, j)) {
                     int score = evaluatePosition(board, i, j, aiValue);
                     scoredMoves.add(new int[]{i, j, score});
@@ -521,7 +523,7 @@ public class AIService {
         }
 
         if (scoredMoves.isEmpty()) {
-            return new int[]{BOARD_SIZE / 2, BOARD_SIZE / 2};
+            return new int[]{BoardRuleService.BOARD_SIZE / 2, BoardRuleService.BOARD_SIZE / 2};
         }
 
         // 排序
@@ -545,41 +547,11 @@ public class AIService {
                 if (dx == 0 && dy == 0) continue;
                 int nx = x + dx;
                 int ny = y + dy;
-                if (nx >= 0 && nx < BOARD_SIZE && ny >= 0 && ny < BOARD_SIZE && board[nx][ny] != 0) {
+                if (nx >= 0 && nx < BoardRuleService.BOARD_SIZE && ny >= 0 && ny < BoardRuleService.BOARD_SIZE && board[nx][ny] != 0) {
                     return true;
                 }
             }
         }
-        return false;
-    }
-
-    public boolean checkWin(int[][] board, int x, int y, int player) {
-        int[][] directions = {{1, 0}, {0, 1}, {1, 1}, {1, -1}};
-
-        for (int[] dir : directions) {
-            int count = 1;
-
-            // Forward
-            int nx = x + dir[0];
-            int ny = y + dir[1];
-            while (nx >= 0 && nx < BOARD_SIZE && ny >= 0 && ny < BOARD_SIZE && board[nx][ny] == player) {
-                count++;
-                nx += dir[0];
-                ny += dir[1];
-            }
-
-            // Backward
-            nx = x - dir[0];
-            ny = y - dir[1];
-            while (nx >= 0 && nx < BOARD_SIZE && ny >= 0 && ny < BOARD_SIZE && board[nx][ny] == player) {
-                count++;
-                nx -= dir[0];
-                ny -= dir[1];
-            }
-
-            if (count >= 5) return true;
-        }
-
         return false;
     }
 }

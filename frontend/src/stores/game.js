@@ -1,10 +1,11 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { startGame as startGameApi, makeMove as makeMoveApi, undoMove as undoMoveApi, surrender as surrenderApi, saveGame as saveGameApi } from '../api/game'
+import { createEmptyBoard, oppositeColor } from '../utils/boardRules'
 
 export const useGameStore = defineStore('game', () => {
   const gameId = ref('')
-  const board = ref(Array(15).fill(null).map(() => Array(15).fill(0)))
+  const board = ref(createEmptyBoard())
   const currentPlayer = ref('BLACK')
   const playerColor = ref('BLACK')
   const gameMode = ref('AI')
@@ -79,7 +80,7 @@ export const useGameStore = defineStore('game', () => {
             moves.value.push({
               x: res.data.aiMove.x,
               y: res.data.aiMove.y,
-              color: playerColor.value === 'BLACK' ? 'WHITE' : 'BLACK',
+              color: oppositeColor(playerColor.value),
               step: moves.value.length + 1
             })
           }
@@ -136,7 +137,7 @@ export const useGameStore = defineStore('game', () => {
 
   function reset() {
     gameId.value = ''
-    board.value = Array(15).fill(null).map(() => Array(15).fill(0))
+    board.value = createEmptyBoard()
     currentPlayer.value = 'BLACK'
     gameOver.value = false
     winner.value = ''

@@ -13,16 +13,15 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class GameService {
 
-    private static final int BOARD_SIZE = 15;
-
+    private final BoardRuleService boardRuleService;
     private final AIService aiService;
     private final GameRecordMapper gameRecordMapper;
     private final UserService userService;
 
-    // 存储进行中的游戏状态
     private final Map<String, GameState> activeGames = new ConcurrentHashMap<>();
 
-    public GameService(AIService aiService, GameRecordMapper gameRecordMapper, UserService userService) {
+    public GameService(BoardRuleService boardRuleService, AIService aiService, GameRecordMapper gameRecordMapper, UserService userService) {
+        this.boardRuleService = boardRuleService;
         this.aiService = aiService;
         this.gameRecordMapper = gameRecordMapper;
         this.userService = userService;
@@ -30,7 +29,7 @@ public class GameService {
 
     public Map<String, Object> startGame(GameStartRequest request) {
         String gameId = UUID.randomUUID().toString();
-        int[][] board = new int[BOARD_SIZE][BOARD_SIZE];
+        int[][] board = new int[BoardRuleService.BOARD_SIZE][BoardRuleService.BOARD_SIZE];
 
         GameState state = new GameState();
         state.setBoard(board);
@@ -80,15 +79,15 @@ public class GameService {
         int x = request.getX();
         int y = request.getY();
 
-        if (x < 0 || x >= BOARD_SIZE || y < 0 || y >= BOARD_SIZE) {
+        if (!boardRuleService.isValidPosition(x, y)) {
             throw new RuntimeException("落子位置无效");
         }
 
-        if (board[x][y] != 0) {
+        if (!boardRuleService.isEmptyCell(board, x, y)) {
             throw new RuntimeException("该位置已有棋子");
         }
 
-        int playerValue = "BLACK".equals(state.getCurrentPlayer()) ? 1 : 2;
+        int playerValue = boardRuleService.colorToValue(state.getCurrentPlayer());
         board[x][y] = playerValue;
 
         Map<String, Object> move = new HashMap<>();
@@ -103,7 +102,7 @@ public class GameService {
         result.put("board", board);
 
         // Check win
-        if (aiService.checkWin(board, x, y, playerValue)) {
+        if (boardRuleService.checkWin(board, x, y, playerValue)) {
             result.put("gameOver", true);
             result.put("winner", state.getCurrentPlayer());
             activeGames.remove(request.getGameId());
@@ -111,7 +110,7 @@ public class GameService {
         }
 
         // Check draw
-        if (isBoardFull(board)) {
+        if (boardRuleService.isBoardFull(board)) {
             result.put("gameOver", true);
             result.put("winner", "DRAW");
             activeGames.remove(request.getGameId());
@@ -119,7 +118,7 @@ public class GameService {
         }
 
         // Switch player
-        String nextPlayer = "BLACK".equals(state.getCurrentPlayer()) ? "WHITE" : "BLACK";
+        String nextPlayer = boardRuleService.oppositeColor(state.getCurrentPlayer());
         state.setCurrentPlayer(nextPlayer);
 
         result.put("gameOver", false);
@@ -127,10 +126,10 @@ public class GameService {
 
         // AI move
         if ("AI".equals(state.getMode())) {
-            String aiColor = "BLACK".equals(state.getPlayerColor()) ? "WHITE" : "BLACK";
+            String aiColor = boardRuleService.oppositeColor(state.getPlayerColor());
             int[] aiMove = aiService.getAIMove(board, state.getDifficulty(), aiColor);
 
-            int aiValue = "BLACK".equals(aiColor) ? 1 : 2;
+            int aiValue = boardRuleService.colorToValue(aiColor);
             board[aiMove[0]][aiMove[1]] = aiValue;
 
             Map<String, Object> aiMoveMap = new HashMap<>();
@@ -144,7 +143,7 @@ public class GameService {
             result.put("board", board);
 
             // Check AI win
-            if (aiService.checkWin(board, aiMove[0], aiMove[1], aiValue)) {
+            if (boardRuleService.checkWin(board, aiMove[0], aiMove[1], aiValue)) {
                 result.put("gameOver", true);
                 result.put("winner", aiColor);
                 activeGames.remove(request.getGameId());
@@ -186,7 +185,7 @@ public class GameService {
         } else if (moves.size() >= 1) {
             Map<String, Object> lastMove = moves.remove(moves.size() - 1);
             board[(int) lastMove.get("x")][(int) lastMove.get("y")] = 0;
-            state.setCurrentPlayer("BLACK".equals(state.getCurrentPlayer()) ? "WHITE" : "BLACK");
+            state.setCurrentPlayer(boardRuleService.oppositeColor(state.getCurrentPlayer()));
         }
 
         state.setUndoCount(state.getUndoCount() + 1);
@@ -205,7 +204,7 @@ public class GameService {
             throw new RuntimeException("游戏不存在");
         }
 
-        String winner = "BLACK".equals(state.getPlayerColor()) ? "WHITE" : "BLACK";
+        String winner = boardRuleService.oppositeColor(state.getPlayerColor());
         activeGames.remove(gameId);
 
         Map<String, Object> result = new HashMap<>();
@@ -237,16 +236,6 @@ public class GameService {
         return gameRecordMapper.selectById(gameId);
     }
 
-    private boolean isBoardFull(int[][] board) {
-        for (int i = 0; i < BOARD_SIZE; i++) {
-            for (int j = 0; j < BOARD_SIZE; j++) {
-                if (board[i][j] == 0) return false;
-            }
-        }
-        return true;
-    }
-
-    // Inner class for game state
     private static class GameState {
         private int[][] board;
         private String mode;
