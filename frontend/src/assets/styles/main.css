@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;500&display=swap');
+
+body {
+  font-family: 'Noto Serif SC', serif;
+  background-color: #f9f8f4;
+  color: #333;
+  min-height: 100vh;
+}
+
+.btn-zen {
+  @apply border border-zen-border py-4 text-lg tracking-zen bg-white transition-all duration-300 hover:bg-zen-text hover:text-white;
+}
+
+.input-zen {
+  @apply w-full px-4 py-3 bg-transparent border-b border-zen-border focus:border-zen-text outline-none transition-colors duration-300 placeholder-zen-muted;
+}
+
+.card-zen {
+  @apply bg-white p-8 border border-zen-border shadow-sm;
+}

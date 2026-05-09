@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gomoku - Candy Pop</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #ffeff7; font-family: 'Comic Sans MS', 'Quicksand', sans-serif; }
+        .candy-card {
+            background: white;
+            border-radius: 40px;
+            box-shadow: 0 20px 0 #fdb6d0;
+            border: 8px solid #fff;
+        }
+        .btn-candy {
+            background: #ff5e91;
+            color: white;
+            border-radius: 25px;
+            box-shadow: 0 8px 0 #d13a69;
+            transition: all 0.1s;
+        }
+        .btn-candy:active { transform: translateY(4px); box-shadow: 0 4px 0 #d13a69; }
+        .floating { animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-6">
+    <div class="candy-card w-full max-w-sm p-10 text-center relative">
+        <div class="absolute -top-12 left-1/2 -translate-x-1/2 w-24 h-24 bg-yellow-300 rounded-full border-8 border-white floating flex items-center justify-center text-4xl shadow-lg">
+            🍬
+        </div>
+
+        <h1 class="text-4xl font-black text-[#ff5e91] mt-8 mb-4">欢乐五子棋</h1>
+        <p class="text-gray-400 mb-10 font-bold">快来和好朋友一起玩吧！</p>
+
+        <div class="space-y-6">
+            <button class="btn-candy w-full py-4 text-xl font-black italic">开始闯关</button>
+            <button class="btn-candy w-full py-4 text-xl font-black italic bg-[#4cc9f0] shadow-[#2f9bbd]">双人对战</button>
+            <button class="btn-candy w-full py-4 text-xl font-black italic bg-[#7209b7] shadow-[#4d067a]">换装商城</button>
+        </div>
+
+        <div class="mt-12 flex justify-center space-x-4">
+            <div class="w-10 h-10 rounded-full bg-[#f72585] border-4 border-white shadow-md"></div>
+            <div class="w-10 h-10 rounded-full bg-[#4cc9f0] border-4 border-white shadow-md"></div>
+            <div class="w-10 h-10 rounded-full bg-[#fee440] border-4 border-white shadow-md"></div>
+        </div>
+    </div>
+</body>
+</html>

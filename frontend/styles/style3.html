@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gomoku - Cyberpunk Night</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #050505;
+            color: #00fff2;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .neon-box {
+            border: 2px solid #00fff2;
+            box-shadow: 0 0 15px #00fff2, inset 0 0 5px #00fff2;
+            background: rgba(0, 255, 242, 0.05);
+        }
+        .neon-text-pink {
+            color: #ff00ff;
+            text-shadow: 0 0 10px #ff00ff;
+        }
+        .glitch-btn:hover {
+            background: #ff00ff;
+            color: #fff;
+            box-shadow: 0 0 20px #ff00ff;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+    <div class="w-full max-w-md p-8 neon-box relative overflow-hidden">
+        <div class="absolute top-0 right-0 p-2 text-xs opacity-50">VER: 2.0.77</div>
+
+        <h1 class="text-6xl font-black mb-2 tracking-tighter italic">GOMOKU</h1>
+        <h2 class="text-xl neon-text-pink mb-12 font-bold tracking-[0.5em]">NEON_STRIKE</h2>
+
+        <div class="space-y-6">
+            <button class="w-full py-4 text-left px-6 border border-[#00fff2] glitch-btn transition-all relative">
+                <span class="relative z-10">[ 01 ] 接入神经元网络 (ONLINE)</span>
+            </button>
+            <button class="w-full py-4 text-left px-6 border border-[#00fff2] glitch-btn transition-all">
+                <span>[ 02 ] 模拟战演练 (PVP)</span>
+            </button>
+            <button class="w-full py-4 text-left px-6 border border-[#00fff2] glitch-btn transition-all">
+                <span>[ 03 ] 核心存储区 (DATABASE)</span>
+            </button>
+        </div>
+
+        <div class="mt-16 flex justify-between items-end">
+            <div class="text-xs space-y-1">
+                <p>STATUS: CONNECTED</p>
+                <p>PING: 12ms</p>
+            </div>
+            <div class="w-12 h-12 border border-[#ff00ff] flex items-center justify-center animate-pulse">
+                <i class="fa-solid fa-microchip neon-text-pink"></i>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

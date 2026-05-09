@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gomoku - Modern Chinese Ink</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&display=swap');
+        body {
+            font-family: 'ZCOOL XiaoWei', serif;
+            background-image: url('https://www.transparenttextures.com/patterns/handmade-paper.png');
+            background-color: #f4f1ea;
+        }
+        .ink-border { border: 2px solid #222; position: relative; }
+        .ink-border::after {
+            content: ''; position: absolute; top: 2px; left: 2px; right: -4px; bottom: -4px;
+            border: 1px solid #222; opacity: 0.3; pointer-events: none;
+        }
+        .stamp {
+            background-color: #b91c1c; color: white; padding: 4px;
+            writing-mode: vertical-rl; font-size: 0.75rem;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-8">
+    <div class="max-w-lg w-full border-2 border-black p-12 relative bg-white bg-opacity-60 shadow-2xl">
+        <div class="absolute top-4 right-4 stamp">博弈乾坤</div>
+
+        <div class="mb-16">
+            <h1 class="text-7xl font-bold text-black opacity-80 mb-2">五子連珠</h1>
+            <div class="h-1 w-24 bg-black opacity-20"></div>
+        </div>
+
+        <div class="space-y-8">
+            <div class="flex items-center group cursor-pointer">
+                <span class="text-3xl mr-4 group-hover:translate-x-2 transition-transform">一一</span>
+                <span class="text-2xl font-bold tracking-widest border-b border-transparent group-hover:border-black">执黑先行</span>
+            </div>
+            <div class="flex items-center group cursor-pointer">
+                <span class="text-3xl mr-4 group-hover:translate-x-2 transition-transform">一二</span>
+                <span class="text-2xl font-bold tracking-widest border-b border-transparent group-hover:border-black">联机博弈</span>
+            </div>
+            <div class="flex items-center group cursor-pointer">
+                <span class="text-3xl mr-4 group-hover:translate-x-2 transition-transform">一三</span>
+                <span class="text-2xl font-bold tracking-widest border-b border-transparent group-hover:border-black">观棋论道</span>
+            </div>
+        </div>
+
+        <div class="mt-24 text-sm text-gray-500 italic">
+            * 胜负乃兵家常事
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gomoku - E-sports Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #0b0e14; color: #e2e8f0; font-family: 'Inter', sans-serif; }
+        .pro-card {
+            background: linear-gradient(135deg, #1a202c 0%, #171923 100%);
+            border-left: 4px solid #3182ce;
+        }
+        .stat-badge { background: rgba(49, 130, 206, 0.1); border: 1px solid rgba(49, 130, 206, 0.2); }
+        .btn-primary { background-color: #3182ce; transition: all 0.2s; }
+        .btn-primary:hover { background-color: #2b6cb0; transform: skew(-5deg); }
+    </style>
+</head>
+<body class="min-h-screen p-6 flex flex-col items-center justify-center">
+    <div class="w-full max-w-4xl grid md:grid-cols-2 gap-8">
+        <div class="flex flex-col justify-center space-y-6">
+            <div class="inline-flex items-center space-x-2 text-blue-500 font-bold tracking-tighter uppercase">
+                <span class="w-3 h-3 bg-blue-500 rounded-full animate-ping"></span>
+                <span>Season 12 Live</span>
+            </div>
+            <h1 class="text-6xl font-black italic tracking-tighter">GOMOKU<br/><span class="text-blue-500 text-7xl">ELITE</span></h1>
+            <p class="text-gray-400 max-w-sm">加入全球数百万玩家，参与最纯粹的五子棋天梯竞技。</p>
+            <div class="flex space-x-4 pt-4">
+                <button class="btn-primary px-8 py-4 font-bold text-lg uppercase tracking-wider">Play Now</button>
+                <button class="border border-gray-700 px-8 py-4 font-bold text-lg uppercase tracking-wider hover:bg-gray-800">Rankings</button>
+            </div>
+        </div>
+
+        <div class="space-y-4">
+            <div class="pro-card p-6 rounded-r-xl">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="font-bold text-gray-500 uppercase text-xs">Current Profile</span>
+                    <span class="text-blue-500 text-xs">Lv. 42 Master</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="w-16 h-16 bg-gray-700 rounded-lg overflow-hidden flex items-center justify-center">
+                        <i class="fa-solid fa-user text-3xl opacity-50"></i>
+                    </div>
+                    <div>
+                        <div class="text-xl font-bold">Pro_Gamer_99</div>
+                        <div class="text-sm text-gray-500">Win Rate: 68.5%</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="stat-badge p-4 rounded-xl text-center">
+                    <div class="text-2xl font-black text-blue-500">1,420</div>
+                    <div class="text-[10px] text-gray-500 uppercase font-bold">Elo Rating</div>
+                </div>
+                <div class="stat-badge p-4 rounded-xl text-center">
+                    <div class="text-2xl font-black text-blue-500">#452</div>
+                    <div class="text-[10px] text-gray-500 uppercase font-bold">Global Rank</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

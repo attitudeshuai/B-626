@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gomoku - Zen Minimalism</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;500&display=swap');
+        body { font-family: 'Noto Serif SC', serif; background-color: #f9f8f4; color: #333; }
+        .btn-zen { transition: all 0.3s ease; border: 1px solid #e2e2e2; }
+        .btn-zen:hover { background-color: #333; color: #fff; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+    <div class="max-w-md w-full text-center space-y-12">
+        <header class="space-y-4">
+            <h1 class="text-5xl font-light tracking-widest">五子棋</h1>
+            <p class="text-sm text-gray-400 uppercase tracking-widest">Gomoku Zen</p>
+        </header>
+
+        <div class="space-y-4">
+            <button class="btn-zen w-full py-4 text-lg tracking-widest bg-white">开始对弈</button>
+            <button class="btn-zen w-full py-4 text-lg tracking-widest bg-white">在线匹配</button>
+            <button class="btn-zen w-full py-4 text-lg tracking-widest bg-white">战绩查询</button>
+        </div>
+
+        <footer class="pt-20">
+            <div class="flex justify-center space-x-8 text-gray-300">
+                <i class="fa-solid fa-gear cursor-pointer hover:text-gray-600"></i>
+                <i class="fa-solid fa-circle-question cursor-pointer hover:text-gray-600"></i>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

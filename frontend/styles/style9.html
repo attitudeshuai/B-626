@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gomoku - Dark Tech</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #0d1117; color: #c9d1d9; font-family: 'Segoe UI', sans-serif; }
+        .tech-border {
+            border: 1px solid #30363d;
+            background: #161b22;
+            position: relative;
+        }
+        .tech-border::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%;
+            background: #238636;
+        }
+        .scanline {
+            width: 100%; height: 2px; background: rgba(35, 134, 54, 0.1);
+            position: absolute; animation: scan 4s linear infinite;
+        }
+        @keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
+        .btn-tech { border: 1px solid #30363d; background: #21262d; transition: all 0.2s; }
+        .btn-tech:hover { background: #30363d; border-color: #8b949e; }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+    <div class="tech-border w-full max-w-lg p-10 overflow-hidden">
+        <div class="scanline"></div>
+        <div class="flex justify-between items-center mb-12">
+            <div class="text-sm font-mono text-green-500">SYSTEM_ONLINE_01</div>
+            <div class="flex space-x-2">
+                <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <div class="w-2 h-2 bg-green-500 rounded-full opacity-50"></div>
+                <div class="w-2 h-2 bg-green-500 rounded-full opacity-20"></div>
+            </div>
+        </div>
+
+        <h1 class="text-4xl font-mono font-bold mb-2 tracking-widest text-white">GOMOKU_CORE</h1>
+        <p class="text-xs font-mono text-gray-500 mb-12 uppercase">Artificial Intelligence Powered Engine</p>
+
+        <div class="space-y-4 font-mono">
+            <button class="btn-tech w-full py-4 flex items-center px-6">
+                <i class="fa-solid fa-play mr-4 text-green-500"></i>
+                <span>INITIALIZE_MATCH</span>
+            </button>
+            <button class="btn-tech w-full py-4 flex items-center px-6">
+                <i class="fa-solid fa-network-wired mr-4 text-green-500"></i>
+                <span>NETWORK_LOBBY</span>
+            </button>
+            <button class="btn-tech w-full py-4 flex items-center px-6">
+                <i class="fa-solid fa-code-branch mr-4 text-green-500"></i>
+                <span>VIEW_HISTORY</span>
+            </button>
+        </div>
+
+        <div class="mt-16 grid grid-cols-3 gap-2 text-[10px] font-mono text-gray-600">
+            <div class="p-2 border border-[#30363d]">MEM: 4.2GB</div>
+            <div class="p-2 border border-[#30363d]">CPU: 0.05%</div>
+            <div class="p-2 border border-[#30363d]">LAT: 1MS</div>
+        </div>
+    </div>
+</body>
+</html>
