@@ -2,6 +2,7 @@ package com.gomoku.websocket;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gomoku.service.AIService;
+import com.gomoku.service.BoardService;
 import com.gomoku.service.UserService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
@@ -18,13 +19,15 @@ public class GameWebSocketHandler extends TextWebSocketHandler {
 
     private final GameRoomManager roomManager;
     private final AIService aiService;
+    private final BoardService boardService;
     private final UserService userService;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final Map<Long, WebSocketSession> sessions = new ConcurrentHashMap<>();
 
-    public GameWebSocketHandler(GameRoomManager roomManager, AIService aiService, UserService userService) {
+    public GameWebSocketHandler(GameRoomManager roomManager, AIService aiService, BoardService boardService, UserService userService) {
         this.roomManager = roomManager;
         this.aiService = aiService;
+        this.boardService = boardService;
         this.userService = userService;
     }
 
@@ -222,13 +225,13 @@ public class GameWebSocketHandler extends TextWebSocketHandler {
         int x = (int) payload.get("x");
         int y = (int) payload.get("y");
 
-        if (x < 0 || x >= 15 || y < 0 || y >= 15 || room.getBoard()[x][y] != 0) {
+        if (!boardService.canPlace(room.getBoard(), x, y)) {
             sendMessage(session, createMessage("error", Map.of("message", "无效的落子位置")));
             return;
         }
 
-        int playerValue = "BLACK".equals(room.getCurrentPlayer()) ? 1 : 2;
-        room.getBoard()[x][y] = playerValue;
+        int playerValue = boardService.stringToValue(room.getCurrentPlayer());
+        boardService.placePiece(room.getBoard(), x, y, playerValue);
 
         Map<String, Object> move = new HashMap<>();
         move.put("x", x);
@@ -245,33 +248,10 @@ public class GameWebSocketHandler extends TextWebSocketHandler {
             "board", room.getBoard()
         );
 
-        if (aiService.checkWin(room.getBoard(), x, y, playerValue)) {
-            room.setStatus("FINISHED");
-            room.setWinner(room.getCurrentPlayer());
-
-            String winnerColor = room.getCurrentPlayer();
-            Long winnerId = room.getPlayerColor(room.getHostId()).equals(winnerColor)
-                ? room.getHostId() : room.getGuestId();
-            Long loserId = winnerId.equals(room.getHostId()) ? room.getGuestId() : room.getHostId();
-
-            userService.updateGameStats(winnerId, "WIN");
-            userService.updateGameStats(loserId, "LOSE");
-
-            broadcastToRoom(room, createMessage("gameOver", Map.of(
-                "winner", winnerColor,
-                "move", moveData
-            )));
-        } else if (isBoardFull(room.getBoard())) {
-            room.setStatus("FINISHED");
-            room.setWinner("DRAW");
-
-            userService.updateGameStats(room.getHostId(), "DRAW");
-            userService.updateGameStats(room.getGuestId(), "DRAW");
-
-            broadcastToRoom(room, createMessage("gameOver", Map.of(
-                "winner", "DRAW",
-                "move", moveData
-            )));
+        if (boardService.checkWin(room.getBoard(), x, y, playerValue)) {
+            handleGameOver(room, room.getCurrentPlayer(), moveData);
+        } else if (boardService.isBoardFull(room.getBoard())) {
+            handleGameOver(room, "DRAW", moveData);
         } else {
             room.switchPlayer();
             broadcastToRoom(room, createMessage("moveMade", Map.of(
@@ -279,6 +259,27 @@ public class GameWebSocketHandler extends TextWebSocketHandler {
                 "currentPlayer", room.getCurrentPlayer()
             )));
         }
+    }
+
+    private void handleGameOver(GameRoom room, String winnerColor, Map<String, Object> moveData) {
+        room.setStatus("FINISHED");
+        room.setWinner(winnerColor);
+
+        if (!"DRAW".equals(winnerColor)) {
+            Long winnerId = room.getPlayerColor(room.getHostId()).equals(winnerColor)
+                ? room.getHostId() : room.getGuestId();
+            Long loserId = winnerId.equals(room.getHostId()) ? room.getGuestId() : room.getHostId();
+            userService.updateGameStats(winnerId, "WIN");
+            userService.updateGameStats(loserId, "LOSE");
+        } else {
+            userService.updateGameStats(room.getHostId(), "DRAW");
+            userService.updateGameStats(room.getGuestId(), "DRAW");
+        }
+
+        broadcastToRoom(room, createMessage("gameOver", Map.of(
+            "winner", winnerColor,
+            "move", moveData
+        )));
     }
 
     private void handleRequestUndo(WebSocketSession session, Long userId) {
@@ -308,35 +309,39 @@ public class GameWebSocketHandler extends TextWebSocketHandler {
         WebSocketSession requesterSession = sessions.get(requesterId);
 
         if (accept) {
-            if (room.getMoves().size() >= 2) {
-                room.getMoves().remove(room.getMoves().size() - 1);
-                Map<String, Object> lastMove = room.getMoves().remove(room.getMoves().size() - 1);
-                int x1 = (int) lastMove.get("x");
-                int y1 = (int) lastMove.get("y");
-                room.getBoard()[x1][y1] = 0;
-
-                if (room.getMoves().size() > 0) {
-                    Map<String, Object> prevMove = room.getMoves().get(room.getMoves().size() - 1);
-                    int x2 = (int) prevMove.get("x");
-                    int y2 = (int) prevMove.get("y");
-                    room.getBoard()[x2][y2] = 0;
-                    room.getMoves().remove(room.getMoves().size() - 1);
-                }
-
-                room.incrementUndoCount(requesterId);
-                room.switchPlayer();
-                room.switchPlayer();
-
-                broadcastToRoom(room, createMessage("undoAccepted", Map.of(
-                    "board", room.getBoard(),
-                    "currentPlayer", room.getCurrentPlayer(),
-                    "undoRemaining", room.getUndoRemaining(requesterId)
-                )));
-            }
+            processUndo(room, requesterId);
         } else {
             if (requesterSession != null) {
                 sendMessage(requesterSession, createMessage("undoRejected", Map.of()));
             }
+        }
+    }
+
+    private void processUndo(GameRoom room, Long requesterId) {
+        if (room.getMoves().size() >= 2) {
+            room.getMoves().remove(room.getMoves().size() - 1);
+            Map<String, Object> lastMove = room.getMoves().remove(room.getMoves().size() - 1);
+            int x1 = (int) lastMove.get("x");
+            int y1 = (int) lastMove.get("y");
+            boardService.removePiece(room.getBoard(), x1, y1);
+
+            if (room.getMoves().size() > 0) {
+                Map<String, Object> prevMove = room.getMoves().get(room.getMoves().size() - 1);
+                int x2 = (int) prevMove.get("x");
+                int y2 = (int) prevMove.get("y");
+                boardService.removePiece(room.getBoard(), x2, y2);
+                room.getMoves().remove(room.getMoves().size() - 1);
+            }
+
+            room.incrementUndoCount(requesterId);
+            room.switchPlayer();
+            room.switchPlayer();
+
+            broadcastToRoom(room, createMessage("undoAccepted", Map.of(
+                "board", room.getBoard(),
+                "currentPlayer", room.getCurrentPlayer(),
+                "undoRemaining", room.getUndoRemaining(requesterId)
+            )));
         }
     }
 
@@ -440,14 +445,5 @@ public class GameWebSocketHandler extends TextWebSocketHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private boolean isBoardFull(int[][] board) {
-        for (int i = 0; i < 15; i++) {
-            for (int j = 0; j < 15; j++) {
-                if (board[i][j] == 0) return false;
-            }
-        }
-        return true;
     }
 }

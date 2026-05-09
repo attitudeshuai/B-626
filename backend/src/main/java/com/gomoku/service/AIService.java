@@ -6,7 +6,13 @@ import java.util.*;
 @Service
 public class AIService {
 
-    private static final int BOARD_SIZE = 15;
+    private final BoardService boardService;
+
+    public AIService(BoardService boardService) {
+        this.boardService = boardService;
+    }
+
+    private static final int BOARD_SIZE = BoardService.BOARD_SIZE;
 
     // 棋型分数常量 - 大幅提升
     private static final int FIVE = 10000000;           // 连五
@@ -285,7 +291,7 @@ public class AIService {
             for (int j = 0; j < BOARD_SIZE; j++) {
                 if (board[i][j] == 0) {
                     board[i][j] = attacker;
-                    if (checkWin(board, i, j, attacker)) {
+                    if (boardService.checkWin(board, i, j, attacker)) {
                         board[i][j] = 0;
                         points.add(new int[]{i, j});
                     } else {
@@ -335,8 +341,8 @@ public class AIService {
         for (int i = 0; i < BOARD_SIZE; i++) {
             for (int j = 0; j < BOARD_SIZE; j++) {
                 if (board[i][j] != 0) {
-                    if (checkWin(board, i, j, aiValue)) return FIVE;
-                    if (checkWin(board, i, j, playerValue)) return -FIVE;
+                    if (boardService.checkWin(board, i, j, aiValue)) return FIVE;
+                    if (boardService.checkWin(board, i, j, playerValue)) return -FIVE;
                 }
             }
         }
@@ -479,7 +485,7 @@ public class AIService {
             for (int j = 0; j < BOARD_SIZE; j++) {
                 if (board[i][j] == 0) {
                     board[i][j] = player;
-                    if (checkWin(board, i, j, player)) {
+                    if (boardService.checkWin(board, i, j, player)) {
                         board[i][j] = 0;
                         return new int[]{i, j};
                     }
@@ -545,41 +551,11 @@ public class AIService {
                 if (dx == 0 && dy == 0) continue;
                 int nx = x + dx;
                 int ny = y + dy;
-                if (nx >= 0 && nx < BOARD_SIZE && ny >= 0 && ny < BOARD_SIZE && board[nx][ny] != 0) {
+                if (nx >= 0 && nx < BoardService.BOARD_SIZE && ny >= 0 && ny < BoardService.BOARD_SIZE && board[nx][ny] != 0) {
                     return true;
                 }
             }
         }
-        return false;
-    }
-
-    public boolean checkWin(int[][] board, int x, int y, int player) {
-        int[][] directions = {{1, 0}, {0, 1}, {1, 1}, {1, -1}};
-
-        for (int[] dir : directions) {
-            int count = 1;
-
-            // Forward
-            int nx = x + dir[0];
-            int ny = y + dir[1];
-            while (nx >= 0 && nx < BOARD_SIZE && ny >= 0 && ny < BOARD_SIZE && board[nx][ny] == player) {
-                count++;
-                nx += dir[0];
-                ny += dir[1];
-            }
-
-            // Backward
-            nx = x - dir[0];
-            ny = y - dir[1];
-            while (nx >= 0 && nx < BOARD_SIZE && ny >= 0 && ny < BOARD_SIZE && board[nx][ny] == player) {
-                count++;
-                nx -= dir[0];
-                ny -= dir[1];
-            }
-
-            if (count >= 5) return true;
-        }
-
         return false;
     }
 }
