@@ -1,5 +1,6 @@
 package com.gomoku.websocket;
 
+import com.gomoku.service.BoardService;
 import lombok.Data;
 
 import java.util.*;
@@ -22,14 +23,12 @@ public class GameRoom {
     private long startTime;
     private Map<Long, Integer> undoCount;
 
-    public static final int BOARD_SIZE = 15;
-
     public GameRoom(String roomId, String roomName, Long hostId, String hostNickname) {
         this.roomId = roomId;
         this.roomName = roomName;
         this.hostId = hostId;
         this.hostNickname = hostNickname;
-        this.board = new int[BOARD_SIZE][BOARD_SIZE];
+        this.board = new int[BoardService.BOARD_SIZE][BoardService.BOARD_SIZE];
         this.moves = new ArrayList<>();
         this.status = "WAITING";
         this.createTime = System.currentTimeMillis();
@@ -40,7 +39,7 @@ public class GameRoom {
         this.status = "PLAYING";
         this.currentPlayer = "BLACK";
         this.hostColor = new Random().nextBoolean() ? "BLACK" : "WHITE";
-        this.board = new int[BOARD_SIZE][BOARD_SIZE];
+        this.board = new int[BoardService.BOARD_SIZE][BoardService.BOARD_SIZE];
         this.moves = new ArrayList<>();
         this.startTime = System.currentTimeMillis();
         this.undoCount.put(hostId, 0);

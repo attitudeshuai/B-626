@@ -1,32 +1,33 @@
-/Users/a11/Desktop/Gomoku/backend/src/main/java/com/gomoku/security/JwtAuthFilter.java
-/Users/a11/Desktop/Gomoku/backend/src/main/java/com/gomoku/dto/UserUpdateRequest.java
-/Users/a11/Desktop/Gomoku/backend/src/main/java/com/gomoku/controller/OnlineGameController.java
-/Users/a11/Desktop/Gomoku/backend/src/main/java/com/gomoku/config/SecurityConfig.java
-/Users/a11/Desktop/Gomoku/backend/src/main/java/com/gomoku/dto/ApiResponse.java
-/Users/a11/Desktop/Gomoku/backend/src/main/java/com/gomoku/service/UserService.java
-/Users/a11/Desktop/Gomoku/backend/src/main/java/com/gomoku/GomokuApplication.java
-/Users/a11/Desktop/Gomoku/backend/src/main/java/com/gomoku/config/CorsConfig.java
-/Users/a11/Desktop/Gomoku/backend/src/main/java/com/gomoku/mapper/UserMapper.java
-/Users/a11/Desktop/Gomoku/backend/src/main/java/com/gomoku/controller/GameController.java
-/Users/a11/Desktop/Gomoku/backend/src/main/java/com/gomoku/service/AIService.java
-/Users/a11/Desktop/Gomoku/backend/src/main/java/com/gomoku/controller/RankingController.java
-/Users/a11/Desktop/Gomoku/backend/src/main/java/com/gomoku/service/RankingService.java
-/Users/a11/Desktop/Gomoku/backend/src/main/java/com/gomoku/dto/RegisterRequest.java
-/Users/a11/Desktop/Gomoku/backend/src/main/java/com/gomoku/entity/User.java
-/Users/a11/Desktop/Gomoku/backend/src/main/java/com/gomoku/config/MyBatisPlusConfig.java
-/Users/a11/Desktop/Gomoku/backend/src/main/java/com/gomoku/service/GameService.java
-/Users/a11/Desktop/Gomoku/backend/src/main/java/com/gomoku/security/JwtUtils.java
-/Users/a11/Desktop/Gomoku/backend/src/main/java/com/gomoku/dto/GameMoveRequest.java
-/Users/a11/Desktop/Gomoku/backend/src/main/java/com/gomoku/websocket/GameRoom.java
-/Users/a11/Desktop/Gomoku/backend/src/main/java/com/gomoku/config/GlobalExceptionHandler.java
-/Users/a11/Desktop/Gomoku/backend/src/main/java/com/gomoku/config/WebSocketConfig.java
-/Users/a11/Desktop/Gomoku/backend/src/main/java/com/gomoku/controller/UserController.java
-/Users/a11/Desktop/Gomoku/backend/src/main/java/com/gomoku/dto/GameSaveRequest.java
-/Users/a11/Desktop/Gomoku/backend/src/main/java/com/gomoku/entity/GameRecord.java
-/Users/a11/Desktop/Gomoku/backend/src/main/java/com/gomoku/mapper/GameRecordMapper.java
-/Users/a11/Desktop/Gomoku/backend/src/main/java/com/gomoku/controller/AuthController.java
-/Users/a11/Desktop/Gomoku/backend/src/main/java/com/gomoku/websocket/GameWebSocketHandler.java
-/Users/a11/Desktop/Gomoku/backend/src/main/java/com/gomoku/dto/GameStartRequest.java
-/Users/a11/Desktop/Gomoku/backend/src/main/java/com/gomoku/dto/LoginRequest.java
-/Users/a11/Desktop/Gomoku/backend/src/main/java/com/gomoku/websocket/WebSocketHandshakeInterceptor.java
-/Users/a11/Desktop/Gomoku/backend/src/main/java/com/gomoku/websocket/GameRoomManager.java
+D:\charles\program\ai\apps\02.work session\session-gsb1v1_0509\gitlab source\B-626\B-626-TestM_4\backend\src\main\java\com\gomoku\controller\GameController.java
+D:\charles\program\ai\apps\02.work session\session-gsb1v1_0509\gitlab source\B-626\B-626-TestM_4\backend\src\main\java\com\gomoku\controller\AuthController.java
+D:\charles\program\ai\apps\02.work session\session-gsb1v1_0509\gitlab source\B-626\B-626-TestM_4\backend\src\main\java\com\gomoku\controller\OnlineGameController.java
+D:\charles\program\ai\apps\02.work session\session-gsb1v1_0509\gitlab source\B-626\B-626-TestM_4\backend\src\main\java\com\gomoku\websocket\GameRoomManager.java
+D:\charles\program\ai\apps\02.work session\session-gsb1v1_0509\gitlab source\B-626\B-626-TestM_4\backend\src\main\java\com\gomoku\dto\RegisterRequest.java
+D:\charles\program\ai\apps\02.work session\session-gsb1v1_0509\gitlab source\B-626\B-626-TestM_4\backend\src\main\java\com\gomoku\entity\GameRecord.java
+D:\charles\program\ai\apps\02.work session\session-gsb1v1_0509\gitlab source\B-626\B-626-TestM_4\backend\src\main\java\com\gomoku\config\MyBatisPlusConfig.java
+D:\charles\program\ai\apps\02.work session\session-gsb1v1_0509\gitlab source\B-626\B-626-TestM_4\backend\src\main\java\com\gomoku\config\WebSocketConfig.java
+D:\charles\program\ai\apps\02.work session\session-gsb1v1_0509\gitlab source\B-626\B-626-TestM_4\backend\src\main\java\com\gomoku\dto\GameSaveRequest.java
+D:\charles\program\ai\apps\02.work session\session-gsb1v1_0509\gitlab source\B-626\B-626-TestM_4\backend\src\main\java\com\gomoku\service\UserService.java
+D:\charles\program\ai\apps\02.work session\session-gsb1v1_0509\gitlab source\B-626\B-626-TestM_4\backend\src\main\java\com\gomoku\controller\UserController.java
+D:\charles\program\ai\apps\02.work session\session-gsb1v1_0509\gitlab source\B-626\B-626-TestM_4\backend\src\main\java\com\gomoku\dto\UserUpdateRequest.java
+D:\charles\program\ai\apps\02.work session\session-gsb1v1_0509\gitlab source\B-626\B-626-TestM_4\backend\src\main\java\com\gomoku\config\SecurityConfig.java
+D:\charles\program\ai\apps\02.work session\session-gsb1v1_0509\gitlab source\B-626\B-626-TestM_4\backend\src\main\java\com\gomoku\dto\ApiResponse.java
+D:\charles\program\ai\apps\02.work session\session-gsb1v1_0509\gitlab source\B-626\B-626-TestM_4\backend\src\main\java\com\gomoku\GomokuApplication.java
+D:\charles\program\ai\apps\02.work session\session-gsb1v1_0509\gitlab source\B-626\B-626-TestM_4\backend\src\main\java\com\gomoku\config\CorsConfig.java
+D:\charles\program\ai\apps\02.work session\session-gsb1v1_0509\gitlab source\B-626\B-626-TestM_4\backend\src\main\java\com\gomoku\config\GlobalExceptionHandler.java
+D:\charles\program\ai\apps\02.work session\session-gsb1v1_0509\gitlab source\B-626\B-626-TestM_4\backend\src\main\java\com\gomoku\mapper\UserMapper.java
+D:\charles\program\ai\apps\02.work session\session-gsb1v1_0509\gitlab source\B-626\B-626-TestM_4\backend\src\main\java\com\gomoku\websocket\GameRoom.java
+D:\charles\program\ai\apps\02.work session\session-gsb1v1_0509\gitlab source\B-626\B-626-TestM_4\backend\src\main\java\com\gomoku\websocket\WebSocketHandshakeInterceptor.java
+D:\charles\program\ai\apps\02.work session\session-gsb1v1_0509\gitlab source\B-626\B-626-TestM_4\backend\src\main\java\com\gomoku\dto\LoginRequest.java
+D:\charles\program\ai\apps\02.work session\session-gsb1v1_0509\gitlab source\B-626\B-626-TestM_4\backend\src\main\java\com\gomoku\dto\GameMoveRequest.java
+D:\charles\program\ai\apps\02.work session\session-gsb1v1_0509\gitlab source\B-626\B-626-TestM_4\backend\src\main\java\com\gomoku\security\JwtAuthFilter.java
+D:\charles\program\ai\apps\02.work session\session-gsb1v1_0509\gitlab source\B-626\B-626-TestM_4\backend\src\main\java\com\gomoku\service\GameService.java
+D:\charles\program\ai\apps\02.work session\session-gsb1v1_0509\gitlab source\B-626\B-626-TestM_4\backend\src\main\java\com\gomoku\websocket\GameWebSocketHandler.java
+D:\charles\program\ai\apps\02.work session\session-gsb1v1_0509\gitlab source\B-626\B-626-TestM_4\backend\src\main\java\com\gomoku\mapper\GameRecordMapper.java
+D:\charles\program\ai\apps\02.work session\session-gsb1v1_0509\gitlab source\B-626\B-626-TestM_4\backend\src\main\java\com\gomoku\controller\RankingController.java
+D:\charles\program\ai\apps\02.work session\session-gsb1v1_0509\gitlab source\B-626\B-626-TestM_4\backend\src\main\java\com\gomoku\security\JwtUtils.java
+D:\charles\program\ai\apps\02.work session\session-gsb1v1_0509\gitlab source\B-626\B-626-TestM_4\backend\src\main\java\com\gomoku\service\RankingService.java
+D:\charles\program\ai\apps\02.work session\session-gsb1v1_0509\gitlab source\B-626\B-626-TestM_4\backend\src\main\java\com\gomoku\service\BoardService.java
+D:\charles\program\ai\apps\02.work session\session-gsb1v1_0509\gitlab source\B-626\B-626-TestM_4\backend\src\main\java\com\gomoku\service\AIService.java
+D:\charles\program\ai\apps\02.work session\session-gsb1v1_0509\gitlab source\B-626\B-626-TestM_4\backend\src\main\java\com\gomoku\dto\GameStartRequest.java
+D:\charles\program\ai\apps\02.work session\session-gsb1v1_0509\gitlab source\B-626\B-626-TestM_4\backend\src\main\java\com\gomoku\entity\User.java
