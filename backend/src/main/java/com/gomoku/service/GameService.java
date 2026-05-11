@@ -13,24 +13,24 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class GameService {
 
-    private static final int BOARD_SIZE = 15;
-
     private final AIService aiService;
+    private final BoardService boardService;
     private final GameRecordMapper gameRecordMapper;
     private final UserService userService;
 
-    // 存储进行中的游戏状态
     private final Map<String, GameState> activeGames = new ConcurrentHashMap<>();
 
-    public GameService(AIService aiService, GameRecordMapper gameRecordMapper, UserService userService) {
+    public GameService(AIService aiService, BoardService boardService, 
+                       GameRecordMapper gameRecordMapper, UserService userService) {
         this.aiService = aiService;
+        this.boardService = boardService;
         this.gameRecordMapper = gameRecordMapper;
         this.userService = userService;
     }
 
     public Map<String, Object> startGame(GameStartRequest request) {
         String gameId = UUID.randomUUID().toString();
-        int[][] board = new int[BOARD_SIZE][BOARD_SIZE];
+        int[][] board = boardService.createEmptyBoard();
 
         GameState state = new GameState();
         state.setBoard(board);
@@ -48,10 +48,10 @@ public class GameService {
         result.put("currentPlayer", "BLACK");
         result.put("playerColor", state.getPlayerColor());
 
-        // If AI goes first
         if ("AI".equals(request.getMode()) && !request.isPlayerFirst()) {
             int[] aiMove = aiService.getAIMove(board, request.getDifficulty(), "BLACK");
-            board[aiMove[0]][aiMove[1]] = 1;
+            int aiValue = "BLACK".equals("BLACK") ? 1 : 2;
+            boardService.placePiece(board, aiMove[0], aiMove[1], aiValue);
             state.setCurrentPlayer("WHITE");
 
             Map<String, Object> move = new HashMap<>();
@@ -80,16 +80,16 @@ public class GameService {
         int x = request.getX();
         int y = request.getY();
 
-        if (x < 0 || x >= BOARD_SIZE || y < 0 || y >= BOARD_SIZE) {
+        if (!boardService.isValidPosition(x, y)) {
             throw new RuntimeException("落子位置无效");
         }
 
-        if (board[x][y] != 0) {
+        if (!boardService.isEmpty(board, x, y)) {
             throw new RuntimeException("该位置已有棋子");
         }
 
         int playerValue = "BLACK".equals(state.getCurrentPlayer()) ? 1 : 2;
-        board[x][y] = playerValue;
+        boardService.placePiece(board, x, y, playerValue);
 
         Map<String, Object> move = new HashMap<>();
         move.put("x", x);
@@ -102,36 +102,32 @@ public class GameService {
         result.put("valid", true);
         result.put("board", board);
 
-        // Check win
-        if (aiService.checkWin(board, x, y, playerValue)) {
+        if (boardService.checkWin(board, x, y, playerValue)) {
             result.put("gameOver", true);
             result.put("winner", state.getCurrentPlayer());
             activeGames.remove(request.getGameId());
             return result;
         }
 
-        // Check draw
-        if (isBoardFull(board)) {
+        if (boardService.isBoardFull(board)) {
             result.put("gameOver", true);
             result.put("winner", "DRAW");
             activeGames.remove(request.getGameId());
             return result;
         }
 
-        // Switch player
         String nextPlayer = "BLACK".equals(state.getCurrentPlayer()) ? "WHITE" : "BLACK";
         state.setCurrentPlayer(nextPlayer);
 
         result.put("gameOver", false);
         result.put("currentPlayer", nextPlayer);
 
-        // AI move
         if ("AI".equals(state.getMode())) {
             String aiColor = "BLACK".equals(state.getPlayerColor()) ? "WHITE" : "BLACK";
             int[] aiMove = aiService.getAIMove(board, state.getDifficulty(), aiColor);
 
             int aiValue = "BLACK".equals(aiColor) ? 1 : 2;
-            board[aiMove[0]][aiMove[1]] = aiValue;
+            boardService.placePiece(board, aiMove[0], aiMove[1], aiValue);
 
             Map<String, Object> aiMoveMap = new HashMap<>();
             aiMoveMap.put("x", aiMove[0]);
@@ -143,15 +139,13 @@ public class GameService {
             result.put("aiMove", Map.of("x", aiMove[0], "y", aiMove[1]));
             result.put("board", board);
 
-            // Check AI win
-            if (aiService.checkWin(board, aiMove[0], aiMove[1], aiValue)) {
+            if (boardService.checkWin(board, aiMove[0], aiMove[1], aiValue)) {
                 result.put("gameOver", true);
                 result.put("winner", aiColor);
                 activeGames.remove(request.getGameId());
                 return result;
             }
 
-            // Switch back to player
             state.setCurrentPlayer(state.getPlayerColor());
             result.put("currentPlayer", state.getPlayerColor());
         }
@@ -176,16 +170,15 @@ public class GameService {
 
         int[][] board = state.getBoard();
 
-        // In AI mode, undo both player and AI moves
         if ("AI".equals(state.getMode()) && moves.size() >= 2) {
             Map<String, Object> lastMove = moves.remove(moves.size() - 1);
-            board[(int) lastMove.get("x")][(int) lastMove.get("y")] = 0;
+            boardService.removePiece(board, (int) lastMove.get("x"), (int) lastMove.get("y"));
 
             Map<String, Object> playerMove = moves.remove(moves.size() - 1);
-            board[(int) playerMove.get("x")][(int) playerMove.get("y")] = 0;
+            boardService.removePiece(board, (int) playerMove.get("x"), (int) playerMove.get("y"));
         } else if (moves.size() >= 1) {
             Map<String, Object> lastMove = moves.remove(moves.size() - 1);
-            board[(int) lastMove.get("x")][(int) lastMove.get("y")] = 0;
+            boardService.removePiece(board, (int) lastMove.get("x"), (int) lastMove.get("y"));
             state.setCurrentPlayer("BLACK".equals(state.getCurrentPlayer()) ? "WHITE" : "BLACK");
         }
 
@@ -237,16 +230,6 @@ public class GameService {
         return gameRecordMapper.selectById(gameId);
     }
 
-    private boolean isBoardFull(int[][] board) {
-        for (int i = 0; i < BOARD_SIZE; i++) {
-            for (int j = 0; j < BOARD_SIZE; j++) {
-                if (board[i][j] == 0) return false;
-            }
-        }
-        return true;
-    }
-
-    // Inner class for game state
     private static class GameState {
         private int[][] board;
         private String mode;

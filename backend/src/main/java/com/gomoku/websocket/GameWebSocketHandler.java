@@ -2,6 +2,7 @@ package com.gomoku.websocket;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gomoku.service.AIService;
+import com.gomoku.service.BoardService;
 import com.gomoku.service.UserService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
@@ -18,13 +19,16 @@ public class GameWebSocketHandler extends TextWebSocketHandler {
 
     private final GameRoomManager roomManager;
     private final AIService aiService;
+    private final BoardService boardService;
     private final UserService userService;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final Map<Long, WebSocketSession> sessions = new ConcurrentHashMap<>();
 
-    public GameWebSocketHandler(GameRoomManager roomManager, AIService aiService, UserService userService) {
+    public GameWebSocketHandler(GameRoomManager roomManager, AIService aiService, 
+                                BoardService boardService, UserService userService) {
         this.roomManager = roomManager;
         this.aiService = aiService;
+        this.boardService = boardService;
         this.userService = userService;
     }
 
@@ -222,13 +226,13 @@ public class GameWebSocketHandler extends TextWebSocketHandler {
         int x = (int) payload.get("x");
         int y = (int) payload.get("y");
 
-        if (x < 0 || x >= 15 || y < 0 || y >= 15 || room.getBoard()[x][y] != 0) {
+        if (!boardService.isValidPosition(x, y) || !boardService.isEmpty(room.getBoard(), x, y)) {
             sendMessage(session, createMessage("error", Map.of("message", "无效的落子位置")));
             return;
         }
 
         int playerValue = "BLACK".equals(room.getCurrentPlayer()) ? 1 : 2;
-        room.getBoard()[x][y] = playerValue;
+        boardService.placePiece(room.getBoard(), x, y, playerValue);
 
         Map<String, Object> move = new HashMap<>();
         move.put("x", x);
@@ -245,7 +249,7 @@ public class GameWebSocketHandler extends TextWebSocketHandler {
             "board", room.getBoard()
         );
 
-        if (aiService.checkWin(room.getBoard(), x, y, playerValue)) {
+        if (boardService.checkWin(room.getBoard(), x, y, playerValue)) {
             room.setStatus("FINISHED");
             room.setWinner(room.getCurrentPlayer());
 
@@ -261,7 +265,7 @@ public class GameWebSocketHandler extends TextWebSocketHandler {
                 "winner", winnerColor,
                 "move", moveData
             )));
-        } else if (isBoardFull(room.getBoard())) {
+        } else if (boardService.isBoardFull(room.getBoard())) {
             room.setStatus("FINISHED");
             room.setWinner("DRAW");
 
@@ -313,13 +317,13 @@ public class GameWebSocketHandler extends TextWebSocketHandler {
                 Map<String, Object> lastMove = room.getMoves().remove(room.getMoves().size() - 1);
                 int x1 = (int) lastMove.get("x");
                 int y1 = (int) lastMove.get("y");
-                room.getBoard()[x1][y1] = 0;
+                boardService.removePiece(room.getBoard(), x1, y1);
 
                 if (room.getMoves().size() > 0) {
                     Map<String, Object> prevMove = room.getMoves().get(room.getMoves().size() - 1);
                     int x2 = (int) prevMove.get("x");
                     int y2 = (int) prevMove.get("y");
-                    room.getBoard()[x2][y2] = 0;
+                    boardService.removePiece(room.getBoard(), x2, y2);
                     room.getMoves().remove(room.getMoves().size() - 1);
                 }
 
@@ -440,14 +444,5 @@ public class GameWebSocketHandler extends TextWebSocketHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private boolean isBoardFull(int[][] board) {
-        for (int i = 0; i < 15; i++) {
-            for (int j = 0; j < 15; j++) {
-                if (board[i][j] == 0) return false;
-            }
-        }
-        return true;
     }
 }
